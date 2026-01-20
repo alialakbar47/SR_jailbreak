@@ -47,14 +47,14 @@ def _generate_google(
     # Extract model name (remove prefix if present)
     model_name = model.replace("google/", "")
     
+    # Check if this is a Gemma model (they don't support system_instruction)
+    is_gemma = "gemma" in model_name.lower()
+    
     # Configure generation
     generation_config = genai.GenerationConfig(
         temperature=temperature,
         max_output_tokens=max_tokens,
     )
-    
-    # Create model instance
-    genai_model = genai.GenerativeModel(model_name, generation_config=generation_config)
     
     # Convert messages to Gemini format
     gemini_messages = []
@@ -71,13 +71,23 @@ def _generate_google(
         elif role == "assistant":
             gemini_messages.append({"role": "model", "parts": [content]})
     
-    # If there's a system instruction, we need to set it
+    # Handle system instruction based on model type
     if system_instruction:
-        genai_model = genai.GenerativeModel(
-            model_name, 
-            generation_config=generation_config,
-            system_instruction=system_instruction
-        )
+        if is_gemma:
+            # Gemma models don't support system_instruction, prepend to first user message
+            if gemini_messages and gemini_messages[0]["role"] == "user":
+                original_content = gemini_messages[0]["parts"][0]
+                gemini_messages[0]["parts"][0] = f"[System Instructions]\n{system_instruction}\n\n[User Message]\n{original_content}"
+            genai_model = genai.GenerativeModel(model_name, generation_config=generation_config)
+        else:
+            # Other models (Gemini) support system_instruction
+            genai_model = genai.GenerativeModel(
+                model_name, 
+                generation_config=generation_config,
+                system_instruction=system_instruction
+            )
+    else:
+        genai_model = genai.GenerativeModel(model_name, generation_config=generation_config)
     
     # Generate response
     if len(gemini_messages) == 1:
