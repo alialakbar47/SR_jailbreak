@@ -1,0 +1,9 @@
+### perturbation_types
+uppercase=Convert to uppercase
+lowercase=Convert to lowercase
+title=Convert to title case
+random_case=Randomize character cases
+leetspeak=Convert to leetspeak
+add_typos=Add random typos
+add_spaces=Add extra spaces
+remove_spaces=Remove some spaces
