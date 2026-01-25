@@ -91,15 +91,16 @@ def auto_obfuscate(
         prompt: Forbidden prompt.
         model: Model to generate the obfuscation.
         use_llm: Whether to use LLM for obfuscation.
+        verbose: If True, print LLM interactions. Defaults to False.
 
     Returns:
         Jailbroken prompt with obfuscation.
     """
     if use_llm:
-        from ..generate import generate
+        from strongreject_adapted.generate import generate_response as generate
         
         obfuscation_request = PROMPTS["obfuscation_prompt"].format(forbidden_prompt=prompt)
-        obfuscated = generate(obfuscation_request, model, max_tokens=200)
+        obfuscated = generate(obfuscation_request, model, max_tokens=200, verbose=kwargs.get('verbose', False))
     else:
         obfuscated = _simple_obfuscate(prompt)
     

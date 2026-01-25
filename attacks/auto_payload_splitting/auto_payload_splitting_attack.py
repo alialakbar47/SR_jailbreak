@@ -83,7 +83,7 @@ def auto_payload_split(
     Returns:
         Jailbroken prompt with payload splitting.
     """
-    from ..generate import generate
+    from strongreject_adapted.generate import generate_response as generate
     
     # Simple word-based splitting as fallback
     words = prompt.split()

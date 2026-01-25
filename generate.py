@@ -264,7 +264,7 @@ def convert_to_messages(
     return messages
 
 
-def generate(
+def generate_response(
     prompt: Union[str, List[str], List[Dict[str, str]]],
     model: str,
     system_prompt: Optional[str] = None,
@@ -272,6 +272,7 @@ def generate(
     delay: float = 0,
     temperature: float = 1.0,
     max_tokens: int = 1024,
+    verbose: bool = False,
     **kwargs,
 ) -> str:
     """Call an LLM to generate a response.
@@ -291,6 +292,7 @@ def generate(
         delay: Initial delay before calling the API. Defaults to 0.
         temperature: Sampling temperature. Defaults to 1.0.
         max_tokens: Maximum tokens to generate. Defaults to 1024.
+        verbose: If True, print all prompts and responses. Defaults to False.
         **kwargs: Additional provider-specific arguments.
 
     Returns:
@@ -303,6 +305,16 @@ def generate(
 
     messages = convert_to_messages(prompt, system_prompt=system_prompt)
     provider = _detect_provider(model)
+    
+    if verbose:
+        print(f"\n{'='*80}")
+        print(f"🤖 LLM CALL: {model} (provider: {provider})")
+        print(f"{'='*80}")
+        for i, msg in enumerate(messages):
+            role_emoji = {"system": "⚙️", "user": "👤", "assistant": "🤖"}.get(msg["role"], "💬")
+            print(f"{role_emoji} {msg['role'].upper()}:")
+            print(f"{msg['content'][:500]}{'...' if len(msg['content']) > 500 else ''}")
+            print(f"{'-'*80}")
     
     # Provider-specific generation functions
     generators = {
@@ -328,6 +340,10 @@ def generate(
                 **kwargs
             )
             if response is not None:
+                if verbose:
+                    print(f"✅ RESPONSE:")
+                    print(f"{response[:500]}{'...' if len(response) > 500 else ''}")
+                    print(f"{'='*80}\n")
                 return response
         except Exception as e:
             print(f"Attempt {attempt + 1}/{num_retries} failed: {e}")
@@ -335,6 +351,10 @@ def generate(
         delay = 1 if delay == 0 else (2 * delay)
 
     return ""
+
+
+# Backward compatibility alias
+generate = generate_response
 
 
 def generate_to_dataset(

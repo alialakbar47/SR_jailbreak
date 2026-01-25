@@ -62,6 +62,7 @@ def pap(
     template: str,
     models: tuple = ("google/gemini-1.5-flash", "openai/gpt-4o-mini"),
     max_tokens: int = 200,
+    verbose: bool = False,
     **kwargs,
 ) -> str:
     """PAP (Persuasive Adversarial Prompts) jailbreak.
@@ -73,17 +74,18 @@ def pap(
         template: Template key for the persuasion technique.
         models: Models to generate the rewritten prompt. Falls back to next on failure.
         max_tokens: Maximum tokens to generate.
+        verbose: If True, print LLM interactions. Defaults to False.
 
     Returns:
         Jailbroken prompt using persuasion techniques.
     """
-    from ..generate import generate
+    from strongreject_adapted.generate import generate_response as generate
     
     pap_prompt = PROMPTS[template].format(forbidden_prompt=prompt)
     start_phrase = "#mutated_text_with_same_specific_harmful_or_unlawful_intention: "
     
     for model in models:
-        response = generate(pap_prompt, model, max_tokens=max_tokens)
+        response = generate(pap_prompt, model, max_tokens=max_tokens, verbose=verbose)
         try:
             index = response.index(start_phrase)
             return response[index + len(start_phrase):]

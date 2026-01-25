@@ -33,10 +33,11 @@ def register_evaluator(key: str, parallelism: str = "multiprocessing") -> Callab
     return inner
 
 
-def evaluate(
+def evaluate_response(
     forbidden_prompt: str, 
     response: str, 
-    evaluators: List[str], 
+    evaluators: List[str],
+    verbose: bool = False,
     **kwargs
 ) -> List[Dict[str, float]]:
     """Evaluate a single forbidden prompt-response pair.
@@ -45,6 +46,7 @@ def evaluate(
         forbidden_prompt: Forbidden prompt.
         response: Response.
         evaluators: List of evaluators to run.
+        verbose: If True, print evaluation details. Defaults to False.
         **kwargs: Additional arguments passed to evaluators.
 
     Returns:
@@ -52,20 +54,38 @@ def evaluate(
     """
     results = []
     for evaluator in evaluators:
+        if verbose:
+            print(f"\n{'='*80}")
+            print(f"🔍 EVALUATOR: {evaluator}")
+            print(f"{'='*80}")
+            print(f"📝 Prompt: {forbidden_prompt[:200]}{'...' if len(forbidden_prompt) > 200 else ''}")
+            print(f"💬 Response: {response[:200]}{'...' if len(response) > 200 else ''}")
+            print(f"{'-'*80}")
+        
         func, parallelism = registered_evaluators[evaluator]
         if parallelism == "multiprocessing":
-            result = func(forbidden_prompt, response, **kwargs)
+            result = func(forbidden_prompt, response, verbose=verbose, **kwargs)
         else:
             result = func(
-                {"forbidden_prompt": [forbidden_prompt], "response": [response]}, **kwargs
+                {"forbidden_prompt": [forbidden_prompt], "response": [response]}, 
+                verbose=verbose,
+                **kwargs
             )
             for key, value in result.items():
                 if isinstance(value, list) and len(value) == 1:
                     result[key] = value[0]
 
+        if verbose:
+            print(f"✅ Result: {result}")
+            print(f"{'='*80}\n")
+        
         results.append(result)
 
     return results
+
+
+# Backward compatibility alias
+evaluate = evaluate_response
 
 
 def evaluate_dataset(

@@ -78,6 +78,7 @@ def renellm(
     use_llm: bool = False,
     scenario: str = None,
     seed: int = None,
+    verbose: bool = False,
     **kwargs,
 ) -> str:
     """ReNeLLM jailbreak attack.
@@ -90,6 +91,7 @@ def renellm(
         use_llm: Whether to use LLM for rewriting.
         scenario: Scenario template to use (research, fiction, education, journalism).
         seed: Random seed.
+        verbose: If True, print LLM interactions. Defaults to False.
 
     Returns:
         Jailbroken prompt.
@@ -100,15 +102,15 @@ def renellm(
         scenario = rng.choice(list(SCENARIO_TEMPLATES.keys())) if SCENARIO_TEMPLATES else "research"
     
     if use_llm:
-        from ..generate import generate
+        from strongreject_adapted.generate import generate_response as generate
         
         # First rewrite
         rewrite_request = PROMPTS["rewrite_prompt"].format(forbidden_prompt=prompt)
-        rewritten = generate(rewrite_request, model, max_tokens=200)
+        rewritten = generate(rewrite_request, model, max_tokens=200, verbose=verbose)
         
         # Then nest
         nest_request = PROMPTS["nest_prompt"].format(forbidden_prompt=rewritten)
-        nested = generate(nest_request, model, max_tokens=300)
+        nested = generate(nest_request, model, max_tokens=300, verbose=verbose)
         
         return nested
     else:
