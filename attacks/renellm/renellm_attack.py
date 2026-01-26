@@ -102,7 +102,7 @@ def renellm(
         scenario = rng.choice(list(SCENARIO_TEMPLATES.keys())) if SCENARIO_TEMPLATES else "research"
     
     if use_llm:
-        from strongreject_adapted.generate import generate_response as generate
+        from ...generate import generate_response as generate
         
         # First rewrite
         rewrite_request = PROMPTS["rewrite_prompt"].format(forbidden_prompt=prompt)

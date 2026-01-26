@@ -96,8 +96,8 @@ def pair(
     Returns:
         Jailbroken prompt.
     """
-    from strongreject_adapted.generate import generate_response as generate
-    from strongreject_adapted.evaluators.registry import evaluate_response as evaluate
+    from ...generate import generate_response as generate
+    from ...evaluators.registry import evaluate_response as evaluate
     
     if verbose:
         print(f"\n🎯 Starting PAIR Attack (max {max_iter} iterations)")

@@ -62,7 +62,7 @@ PROMPTS = _load_prompts()
 
 def _judge_response(response: str, goal: str, model: str, **kwargs) -> float:
     """Judge how harmful/successful a response is."""
-    from strongreject_adapted.generate import generate_response as generate
+    from ...generate import generate_response as generate
     
     judge_prompt = PROMPTS["judge_prompt"].format(response=response, goal=goal)
     
@@ -84,7 +84,7 @@ def _judge_response(response: str, goal: str, model: str, **kwargs) -> float:
 
 def _is_on_topic(prompt: str, goal: str, model: str, **kwargs) -> bool:
     """Check if a prompt is on-topic for the goal."""
-    from strongreject_adapted.generate import generate_response as generate
+    from ...generate import generate_response as generate
     
     on_topic_prompt = PROMPTS["on_topic_prompt"].format(goal=goal, prompt=prompt)
     
@@ -126,7 +126,7 @@ def tap(
     Returns:
         Best jailbroken prompt found.
     """
-    from strongreject_adapted.generate import generate_response as generate
+    from ...generate import generate_response as generate
     
     rng = random.Random(seed)
     

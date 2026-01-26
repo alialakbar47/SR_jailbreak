@@ -79,7 +79,7 @@ def pap(
     Returns:
         Jailbroken prompt using persuasion techniques.
     """
-    from strongreject_adapted.generate import generate_response as generate
+    from ...generate import generate_response as generate
     
     pap_prompt = PROMPTS[template].format(forbidden_prompt=prompt)
     start_phrase = "#mutated_text_with_same_specific_harmful_or_unlawful_intention: "
