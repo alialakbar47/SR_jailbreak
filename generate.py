@@ -18,7 +18,7 @@ from datasets import Dataset, concatenate_datasets
 # Provider detection and loading
 def _detect_provider(model: str) -> str:
     """Detect the provider from model string."""
-    if model.startswith("google/") or model.startswith("gemini"):
+    if model.startswith("google/") or model.startswith("gemini") or model.startswith("gemma"):
         return "google"
     elif model.startswith("openai/") or model.startswith("gpt"):
         return "openai"
