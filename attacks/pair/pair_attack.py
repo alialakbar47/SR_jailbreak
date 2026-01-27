@@ -74,7 +74,7 @@ def pair(
     judge_models: list = None,
     max_iter: int = 20,
     max_conversation_length: int = 3,
-    max_tokens: int = 200,
+    max_tokens: int = 1024,
     verbose: bool = False,
     **kwargs,
 ) -> str:
