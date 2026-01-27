@@ -47,8 +47,7 @@ def renellm(
     rng = random.Random(seed)
     
     if scenario is None:
-        scenario_templates = prompts.get_scenario_templates()
-        scenario = rng.choice(list(scenario_templates.keys())) if scenario_templates else "research"
+        scenario = rng.choice(list(prompts.SCENARIO_TEMPLATES.keys())) if prompts.SCENARIO_TEMPLATES else "research"
     
     if use_llm:
         from ...generate import generate_response as generate

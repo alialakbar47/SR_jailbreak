@@ -88,13 +88,24 @@ def pair(
                 verbose=verbose,
             )
             try:
-                jailbroken_prompt = json.loads(attacker_response)["prompt"]
+                # Extract JSON from response (handle markdown code blocks)
+                response_text = attacker_response
+                if "```json" in response_text:
+                    response_text = response_text.split("```json")[1].split("```")[0]
+                elif "```" in response_text:
+                    response_text = response_text.split("```")[1].split("```")[0]
+                
+                # Try to parse JSON
+                parsed = json.loads(response_text.strip())
+                jailbroken_prompt = parsed.get("prompt")
+                
+                if jailbroken_prompt:
+                    if verbose:
+                        print(f"✅ Generated jailbreak prompt: {jailbroken_prompt[:200]}...")
+                    break
+            except Exception as e:
                 if verbose:
-                    print(f"✅ Generated jailbreak prompt: {jailbroken_prompt[:200]}...")
-                break
-            except:
-                if verbose:
-                    print(f"❌ Failed to parse JSON from attacker")
+                    print(f"❌ Failed to parse JSON from attacker: {str(e)[:100]}")
                 pass
 
         if jailbroken_prompt is None:

@@ -41,7 +41,7 @@ def pap(
     """
     from ...generate import generate_response as generate
     
-    pap_prompt = prompts.PERSUASION_TECHNIQUES[template].format(forbidden_prompt=prompt)
+    pap_prompt = prompts.PERSUASION_TECHNIQUES[template](prompt)
     start_phrase = "#mutated_text_with_same_specific_harmful_or_unlawful_intention: "
     
     for model in models:
