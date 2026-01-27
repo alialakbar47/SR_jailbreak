@@ -120,15 +120,16 @@ def pair(
         
         if verbose:
             print(f"⚖️ Evaluating response...")
-        result = evaluate(
-            "pair",
+        
+        # Use string_matching as default evaluator if no judge models specified
+        evaluators = ["string_matching"]
+        results = evaluate(
             prompt,
             victim_response,
-            models=judge_models,
-            max_tokens=max_tokens,
+            evaluators,
             verbose=verbose
         )
-        score = result.get("score", 0)
+        score = results[0].get("score", 0) if results else 0
         
         if math.isnan(score):
             if verbose:
