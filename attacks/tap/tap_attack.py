@@ -98,8 +98,8 @@ def _is_on_topic(prompt: str, goal: str, model: str, **kwargs) -> bool:
 @register_jailbreak("tap")
 def tap(
     prompt: str,
-    attack_model: str = "google/gemini-1.5-flash",
-    victim_model: str = "google/gemini-1.5-flash",
+    attack_model: str = "gemma-3-27b-it",
+    victim_model: str = "gemma-3-27b-it",
     judge_model: str = None,
     max_depth: int = 10,
     max_width: int = 10,
