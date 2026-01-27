@@ -12,44 +12,10 @@ References:
 
 import base64
 import json
-import pathlib
 from functools import partial
 
 from ..registry import register_jailbreak, register_decoder, registered_jailbreaks, registered_decoders
-
-# Load prompts from file
-PROMPTS_FILE = pathlib.Path(__file__).parent / "prompts.txt"
-
-
-def _load_prompts() -> dict:
-    """Load prompt templates from prompts.txt file."""
-    prompts = {}
-    try:
-        with open(PROMPTS_FILE, "r", encoding="utf-8") as f:
-            content = f.read()
-        
-        current_key = None
-        current_content = []
-        
-        for line in content.split("\n"):
-            if line.startswith("### "):
-                if current_key:
-                    prompts[current_key] = "\n".join(current_content).strip()
-                current_key = line[4:].strip()
-                current_content = []
-            else:
-                current_content.append(line)
-        
-        if current_key:
-            prompts[current_key] = "\n".join(current_content).strip()
-        
-        return prompts
-    except FileNotFoundError:
-        return {"none": "{forbidden_prompt}"}
-
-
-# Load prompts
-TEMPLATES = _load_prompts()
+from . import prompts
 
 
 def wrapping_jailbreak(prompt: str, jailbreak: str, **kwargs) -> str:
@@ -62,14 +28,16 @@ def wrapping_jailbreak(prompt: str, jailbreak: str, **kwargs) -> str:
     Returns:
         Jailbroken prompt.
     """
-    template = TEMPLATES.get(jailbreak, "{forbidden_prompt}")
+    template_func = prompts.WRAPPING_TEMPLATES.get(jailbreak)
+    if template_func is None:
+        return prompt
     
     # Base64 encode for certain jailbreaks
     if jailbreak.startswith("combination"):
         encoded_prompt = base64.b64encode(prompt.encode("utf-8")).decode()
-        return template.replace("{forbidden_prompt}", encoded_prompt)
+        return template_func(encoded_prompt)
     
-    return template.replace("{forbidden_prompt}", prompt)
+    return template_func(prompt)
 
 
 def decode_json_list(response: str) -> str:
@@ -92,10 +60,10 @@ def decode_json_list(response: str) -> str:
 
 
 # Register all wrapping jailbreaks
-for template_name in TEMPLATES:
+for template_name in prompts.WRAPPING_TEMPLATES:
     registered_jailbreaks[template_name] = partial(wrapping_jailbreak, jailbreak=template_name)
 
 # Register decoders for JSON-based jailbreaks
 for template_name in ["style_injection_json", "few_shot_json", "combination_2", "combination_3"]:
-    if template_name in TEMPLATES:
+    if template_name in prompts.WRAPPING_TEMPLATES:
         registered_decoders[template_name] = decode_json_list

@@ -13,64 +13,12 @@ Reference:
 """
 
 import random
-import pathlib
 from ..registry import register_jailbreak
+from . import prompts
 
-# Load prompts from file
-PROMPTS_FILE = pathlib.Path(__file__).parent / "prompts.txt"
-
-
-def _load_prompts() -> dict:
-    """Load prompt templates from prompts.txt file."""
-    prompts = {}
-    try:
-        with open(PROMPTS_FILE, "r", encoding="utf-8") as f:
-            content = f.read()
-        
-        current_key = None
-        current_content = []
-        
-        for line in content.split("\n"):
-            if line.startswith("### "):
-                if current_key:
-                    prompts[current_key] = "\n".join(current_content).strip()
-                current_key = line[4:].strip()
-                current_content = []
-            else:
-                current_content.append(line)
-        
-        if current_key:
-            prompts[current_key] = "\n".join(current_content).strip()
-        
-        return prompts
-    except FileNotFoundError:
-        return {
-            "main_template": "Create a {scene} with {n_characters} characters across {n_layers} layers. Goal: {goal}",
-            "scenes": "science fiction\nfantasy world",
-            "character_types": "scientists\nhackers",
-        }
-
-
-# Load prompts
-PROMPTS = _load_prompts()
-
-
-def _get_scenes() -> list:
-    """Get available scenes from prompts."""
-    if "scenes" in PROMPTS:
-        return [s.strip() for s in PROMPTS["scenes"].split("\n") if s.strip()]
-    return ["science fiction", "fantasy world"]
-
-
-def _get_character_types() -> list:
-    """Get available character types from prompts."""
-    if "character_types" in PROMPTS:
-        return [c.strip() for c in PROMPTS["character_types"].split("\n") if c.strip()]
-    return ["scientists", "hackers"]
-
-
-SCENES = _get_scenes()
-CHARACTER_TYPES = _get_character_types()
+# Define scenes and character types
+SCENES = ["science fiction", "fantasy world", "mystery novel", "historical drama"]
+CHARACTER_TYPES = ["scientists", "hackers", "detectives", "explorers"]
 
 
 @register_jailbreak("deep_inception")
@@ -100,15 +48,8 @@ def deep_inception(
     """
     rng = random.Random(seed)
     
-    # Use the template with the goal
-    template = PROMPTS.get("main_template", "Create a scenario where characters must {goal}")
-    
-    jailbreak_prompt = template.format(
-        scene=scene,
-        n_characters=n_characters,
-        n_layers=n_layers,
-        goal=prompt
-    )
+    # Use multi-layer inception from prompts module
+    jailbreak_prompt = prompts.get_multi_layer_inception(prompt, n_layers)
     
     return jailbreak_prompt
 

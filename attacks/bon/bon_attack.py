@@ -13,58 +13,12 @@ Reference:
 """
 
 import random
-import pathlib
 
 from ..registry import register_jailbreak
+from . import prompts
 
-# Load prompts from file
-PROMPTS_FILE = pathlib.Path(__file__).parent / "prompts.txt"
-
-
-def _load_prompts() -> dict:
-    """Load configuration from prompts.txt file."""
-    prompts = {}
-    try:
-        with open(PROMPTS_FILE, "r", encoding="utf-8") as f:
-            content = f.read()
-        
-        current_key = None
-        current_content = []
-        
-        for line in content.split("\n"):
-            if line.startswith("### "):
-                if current_key:
-                    prompts[current_key] = "\n".join(current_content).strip()
-                current_key = line[4:].strip()
-                current_content = []
-            else:
-                current_content.append(line)
-        
-        if current_key:
-            prompts[current_key] = "\n".join(current_content).strip()
-        
-        return prompts
-    except FileNotFoundError:
-        return {}
-
-
-# Load prompts
-PROMPTS = _load_prompts()
-
-
-def _parse_perturbation_types() -> list:
-    """Parse perturbation types from prompts."""
-    if "perturbation_types" in PROMPTS:
-        types = []
-        for line in PROMPTS["perturbation_types"].split("\n"):
-            if "=" in line:
-                key, _ = line.split("=", 1)
-                types.append(key.strip())
-        return types
-    return ["uppercase", "lowercase", "leetspeak", "random_case"]
-
-
-PERTURBATION_TYPES = _parse_perturbation_types()
+# Define perturbation types
+PERTURBATION_TYPES = ["uppercase", "lowercase", "leetspeak", "random_case", "title", "add_typos"]
 
 
 def _apply_perturbation(text: str, perturbation: str, rng: random.Random) -> str:
@@ -137,7 +91,9 @@ def bon(
         candidates.append(perturbed)
     
     # Return a random candidate (in full implementation, would evaluate and pick best)
-    return rng.choice(candidates)
+    # Use prompts module to get final instruction
+    chosen = rng.choice(candidates)
+    return prompts.get_bon_instruction(chosen)
 
 
 @register_jailbreak("bon_single")

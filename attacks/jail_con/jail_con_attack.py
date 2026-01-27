@@ -6,56 +6,12 @@ Based on the JAIL-CON repository.
 """
 
 import re
-import pathlib
 from ..registry import register_jailbreak
-
-# Load prompts from file
-PROMPTS_FILE = pathlib.Path(__file__).parent / "prompts.txt"
+from . import prompts
 
 
-def _load_prompts() -> dict:
-    """Load prompt templates from prompts.txt file."""
-    prompts = {}
-    try:
-        with open(PROMPTS_FILE, "r", encoding="utf-8") as f:
-            content = f.read()
-        
-        current_key = None
-        current_content = []
-        
-        for line in content.split("\n"):
-            if line.startswith("### "):
-                if current_key:
-                    prompts[current_key] = "\n".join(current_content).strip()
-                current_key = line[4:].strip()
-                current_content = []
-            else:
-                current_content.append(line)
-        
-        if current_key:
-            prompts[current_key] = "\n".join(current_content).strip()
-        
-        return prompts
-    except FileNotFoundError:
-        return {}
-
-
-# Load prompts
-PROMPTS = _load_prompts()
-
-
-def _parse_separators() -> dict:
-    """Parse separator mappings from prompts."""
-    separators = {}
-    if "separators" in PROMPTS:
-        for line in PROMPTS["separators"].split("\n"):
-            if "=" in line:
-                key, value = line.split("=", 1)
-                separators[key.strip()] = value.strip()
-    return separators if separators else {"A": "{}", "B": "<>", "C": "[]", "D": "$$", "E": "##", "F": "😊😊"}
-
-
-SEPARATORS = _parse_separators()
+# Define separators directly
+SEPARATORS = {"A": "{}", "B": "<>", "C": "[]", "D": "$$", "E": "##", "F": "😊😊"}
 
 
 def _combine_sentences(
@@ -136,9 +92,9 @@ def jail_con_auto1(
         Jailbroken prompt in parallel format.
     """
     if benign_prompt is None:
-        benign_prompt = PROMPTS.get("default_benign_prompt", "List the categories of domain names")
+        benign_prompt = "List the categories of domain names"
     if target_prefix is None:
-        target_prefix = PROMPTS.get("target_prefix", "Sure, here is")
+        target_prefix = "Sure, here is"
     
     wrapper = SEPARATORS.get(separator, "{}")
     left, right = wrapper[0], wrapper[1]
@@ -146,13 +102,11 @@ def jail_con_auto1(
     # Combine the harmful prompt (outside) with benign prompt (inside)
     combined_request = _combine_sentences(prompt, benign_prompt, wrapper)
     
-    # Build the full prompt
-    prompt_begin = PROMPTS.get("prompt_begin", "")
-    auto1_instructions = PROMPTS.get("auto1_instructions", "").format(left=left, right=right)
-    
+    # Use the prompts module
+    jailbreak = prompts.get_jail_con_template(prompt, "template1")
     user_content = f"REQUEST: {combined_request}\nAnswer: {target_prefix}"
     
-    return f"{prompt_begin}\n\n{auto1_instructions}\n\n{user_content}"
+    return f"{jailbreak}\n\n{user_content}"
 
 
 @register_jailbreak("jail_con_auto2")
@@ -178,9 +132,9 @@ def jail_con_auto2(
         Jailbroken prompt in parallel format.
     """
     if benign_prompt is None:
-        benign_prompt = PROMPTS.get("default_benign_prompt", "List the categories of domain names")
+        benign_prompt = "List the categories of domain names"
     if target_prefix is None:
-        target_prefix = PROMPTS.get("target_prefix", "Sure, here is")
+        target_prefix = "Sure, here is"
     
     wrapper = SEPARATORS.get(separator, "{}")
     left, right = wrapper[0], wrapper[1]
@@ -191,13 +145,11 @@ def jail_con_auto2(
     # Also combine the target prefix
     combined_target = _combine_sentences(target_prefix, target_prefix, wrapper)
     
-    # Build the full prompt
-    prompt_begin = PROMPTS.get("prompt_begin", "")
-    auto2_instructions = PROMPTS.get("auto2_instructions", "").format(left=left, right=right)
-    
+    # Use the prompts module
+    jailbreak = prompts.get_jail_con_template(prompt, "template2")
     user_content = f"REQUEST: {combined_request}\nAnswer: {combined_target}"
     
-    return f"{prompt_begin}\n\n{auto2_instructions}\n\n{user_content}"
+    return f"{jailbreak}\n\n{user_content}"
 
 
 @register_jailbreak("jail_con")
