@@ -69,8 +69,8 @@ PROMPTS = _load_prompts()
 def pair(
     prompt: str,
     target_str: str = "Sure, I'm happy to help",
-    attack_models: str ="google/gemma-3-27b-it",
-    victim_model: str = "google/gemma-3-27b-it",
+    attack_models: list = None,
+    victim_model: str = "gemma-3-27b-it",
     judge_models: list = None,
     max_iter: int = 20,
     max_conversation_length: int = 3,
@@ -98,6 +98,10 @@ def pair(
     """
     from ...generate import generate_response as generate
     from ...evaluators.registry import evaluate_response as evaluate
+    
+    # Set default attack models if not provided
+    if attack_models is None:
+        attack_models = ["gemma-3-27b-it"]
     
     if verbose:
         print(f"\n🎯 Starting PAIR Attack (max {max_iter} iterations)")
