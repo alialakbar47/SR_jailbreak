@@ -69,8 +69,8 @@ PROMPTS = _load_prompts()
 def pair(
     prompt: str,
     target_str: str = "Sure, I'm happy to help",
-    attack_models: str ="gemma-3-27b-it",
-    victim_model: str = "gemma-3-27b-it",
+    attack_models: str ="google/gemma-3-27b-it",
+    victim_model: str = "google/gemma-3-27b-it",
     judge_models: list = None,
     max_iter: int = 20,
     max_conversation_length: int = 3,
