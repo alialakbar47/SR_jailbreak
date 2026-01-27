@@ -69,7 +69,7 @@ PROMPTS = _load_prompts()
 def pair(
     prompt: str,
     target_str: str = "Sure, I'm happy to help",
-    attack_models: tuple = ("gemma-3-27b-it", "openai/gpt-4o-mini"),
+    attack_models: str ="gemma-3-27b-it",
     victim_model: str = "gemma-3-27b-it",
     judge_models: list = None,
     max_iter: int = 20,
