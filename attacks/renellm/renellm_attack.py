@@ -22,7 +22,7 @@ from . import prompts
 @register_jailbreak("renellm")
 def renellm(
     prompt: str,
-    model: str = "google/gemini-1.5-flash",
+    model: str = "gemma-3-27b-it",
     use_llm: bool = False,
     scenario: str = None,
     seed: int = None,

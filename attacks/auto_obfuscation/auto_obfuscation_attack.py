@@ -33,7 +33,7 @@ def _simple_obfuscate(text: str) -> str:
 @register_jailbreak("auto_obfuscation")
 def auto_obfuscate(
     prompt: str,
-    model: str = "google/gemini-1.5-flash",
+    model: str = "gemma-3-27b-it",
     use_llm: bool = False,
     language: str = "english",
     **kwargs,

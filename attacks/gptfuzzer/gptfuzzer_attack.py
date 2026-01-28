@@ -57,8 +57,8 @@ def _mutation_crossover(prompt1: str, prompt2: str) -> str:
 @register_jailbreak("gptfuzzer")
 def gptfuzzer(
     prompt: str,
-    attack_model: str = "google/gemini-1.5-flash",
-    victim_model: str = "google/gemini-1.5-flash",
+    attack_model: str = "gemma-3-27b-it",
+    victim_model: str = "gemma-3-27b-it",
     max_iterations: int = 10,
     population_size: int = 5,
     seed: int = None,

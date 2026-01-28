@@ -21,7 +21,7 @@ from . import prompts
 @register_jailbreak("auto_payload_splitting")
 def auto_payload_split(
     prompt: str,
-    model: str = "google/gemini-1.5-flash",
+    model: str = "gemma-3-27b-it",
     language: str = "english",
     **kwargs,
 ) -> str:

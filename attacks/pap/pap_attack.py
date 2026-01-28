@@ -20,7 +20,7 @@ from . import prompts
 def pap(
     prompt: str,
     template: str,
-    models: tuple = ("google/gemini-1.5-flash", "openai/gpt-4o-mini"),
+    models: tuple = ("gemma-3-27b-it", "openai/gpt-4o-mini"),
     max_tokens: int = 200,
     verbose: bool = False,
     language: str = "english",
