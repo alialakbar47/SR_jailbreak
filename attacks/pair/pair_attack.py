@@ -50,8 +50,8 @@ def pair(
     Returns:
         Jailbroken prompt.
     """
-    from ...generate import generate_response as generate
-    from ...evaluators.registry import evaluate_response as evaluate
+    from generate import generate_response as generate
+    from evaluators.registry import evaluate_response as evaluate
     
     # Set default attack models if not provided
     if attack_models is None:

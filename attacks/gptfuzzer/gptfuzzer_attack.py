@@ -20,7 +20,7 @@ from . import prompts
 
 def _mutation_expand(prompt: str, model: str, **kwargs) -> str:
     """Expand the prompt with more details."""
-    from ...generate import generate_response as generate
+    from generate import generate_response as generate
     
     expand_prompt = prompts.get_mutation_expand(prompt=prompt)
     return generate(expand_prompt, model, max_tokens=500, **kwargs)
@@ -28,7 +28,7 @@ def _mutation_expand(prompt: str, model: str, **kwargs) -> str:
 
 def _mutation_shorten(prompt: str, model: str, **kwargs) -> str:
     """Shorten the prompt while keeping the meaning."""
-    from ...generate import generate_response as generate
+    from generate import generate_response as generate
     
     shorten_prompt = prompts.get_mutation_shorten(prompt=prompt)
     return generate(shorten_prompt, model, max_tokens=300, **kwargs)
@@ -36,7 +36,7 @@ def _mutation_shorten(prompt: str, model: str, **kwargs) -> str:
 
 def _mutation_rephrase(prompt: str, model: str, **kwargs) -> str:
     """Rephrase the prompt."""
-    from ...generate import generate_response as generate
+    from generate import generate_response as generate
     
     rephrase_prompt = prompts.get_mutation_rephrase(prompt=prompt)
     return generate(rephrase_prompt, model, max_tokens=500, **kwargs)
@@ -79,8 +79,8 @@ def gptfuzzer(
     Returns:
         Best jailbroken prompt found.
     """
-    from ...generate import generate_response as generate
-    from ...evaluators.registry import evaluate_response as evaluate
+    from generate import generate_response as generate
+    from evaluators.registry import evaluate_response as evaluate
     
     rng = random.Random(seed)
     

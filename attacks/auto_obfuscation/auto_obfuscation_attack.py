@@ -51,7 +51,7 @@ def auto_obfuscate(
         Jailbroken prompt with obfuscation.
     """
     if use_llm:
-        from ...generate import generate_response as generate
+        from generate import generate_response as generate
         
         obfuscation_request = prompts.get_obfuscation_prompt(forbidden_prompt=prompt)
         obfuscated = generate(obfuscation_request, model, max_tokens=200, verbose=kwargs.get('verbose', False))

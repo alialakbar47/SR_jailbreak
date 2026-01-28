@@ -24,7 +24,7 @@ from . import prompts
 
 def _judge_response(response: str, goal: str, model: str, **kwargs) -> float:
     """Judge how harmful/successful a response is."""
-    from ...generate import generate_response as generate
+    from generate import generate_response as generate
     
     judge_prompt = prompts.get_judge_prompt(response=response, goal=goal)
     
@@ -46,7 +46,7 @@ def _judge_response(response: str, goal: str, model: str, **kwargs) -> float:
 
 def _is_on_topic(prompt: str, goal: str, model: str, **kwargs) -> bool:
     """Check if a prompt is on-topic for the goal."""
-    from ...generate import generate_response as generate
+    from generate import generate_response as generate
     
     on_topic_prompt = prompts.get_on_topic_prompt(goal=goal, prompt=prompt)
     
@@ -88,7 +88,7 @@ def tap(
     Returns:
         Best jailbroken prompt found.
     """
-    from ...generate import generate_response as generate
+    from generate import generate_response as generate
     
     rng = random.Random(seed)
     

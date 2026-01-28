@@ -50,7 +50,7 @@ def renellm(
         scenario = rng.choice(list(prompts.SCENARIO_TEMPLATES.keys())) if prompts.SCENARIO_TEMPLATES else "research"
     
     if use_llm:
-        from ...generate import generate_response as generate
+        from generate import generate_response as generate
         
         # First rewrite
         rewrite_request = prompts.get_rewrite_prompt(forbidden_prompt=prompt)
