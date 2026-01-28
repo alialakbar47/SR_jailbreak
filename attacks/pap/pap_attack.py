@@ -23,6 +23,7 @@ def pap(
     models: tuple = ("google/gemini-1.5-flash", "openai/gpt-4o-mini"),
     max_tokens: int = 200,
     verbose: bool = False,
+    language: str = "english",
     **kwargs,
 ) -> str:
     """PAP (Persuasive Adversarial Prompts) jailbreak.
@@ -39,9 +40,9 @@ def pap(
     Returns:
         Jailbroken prompt using persuasion techniques.
     """
-    from generate import generate_response as generate
+    from ...generate import generate_response as generate
     
-    pap_prompt = prompts.PERSUASION_TECHNIQUES[template](prompt)
+    pap_prompt = prompts.PERSUASION_TECHNIQUES[template](prompt, language=language)
     start_phrase = "#mutated_text_with_same_specific_harmful_or_unlawful_intention: "
     
     for model in models:

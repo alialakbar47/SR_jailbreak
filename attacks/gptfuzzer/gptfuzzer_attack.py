@@ -18,27 +18,27 @@ from ..registry import register_jailbreak
 from . import prompts
 
 
-def _mutation_expand(prompt: str, model: str, **kwargs) -> str:
+def _mutation_expand(prompt: str, model: str, language: str = "english", **kwargs) -> str:
     """Expand the prompt with more details."""
-    from generate import generate_response as generate
+    from ...generate import generate_response as generate
     
-    expand_prompt = prompts.get_mutation_expand(prompt=prompt)
+    expand_prompt = prompts.get_mutation_expand(prompt=prompt, language=language)
     return generate(expand_prompt, model, max_tokens=500, **kwargs)
 
 
-def _mutation_shorten(prompt: str, model: str, **kwargs) -> str:
+def _mutation_shorten(prompt: str, model: str, language: str = "english", **kwargs) -> str:
     """Shorten the prompt while keeping the meaning."""
-    from generate import generate_response as generate
+    from ...generate import generate_response as generate
     
-    shorten_prompt = prompts.get_mutation_shorten(prompt=prompt)
+    shorten_prompt = prompts.get_mutation_shorten(prompt=prompt, language=language)
     return generate(shorten_prompt, model, max_tokens=300, **kwargs)
 
 
-def _mutation_rephrase(prompt: str, model: str, **kwargs) -> str:
+def _mutation_rephrase(prompt: str, model: str, language: str = "english", **kwargs) -> str:
     """Rephrase the prompt."""
-    from generate import generate_response as generate
+    from ...generate import generate_response as generate
     
-    rephrase_prompt = prompts.get_mutation_rephrase(prompt=prompt)
+    rephrase_prompt = prompts.get_mutation_rephrase(prompt=prompt, language=language)
     return generate(rephrase_prompt, model, max_tokens=500, **kwargs)
 
 
@@ -62,6 +62,7 @@ def gptfuzzer(
     max_iterations: int = 10,
     population_size: int = 5,
     seed: int = None,
+    language: str = "english",
     **kwargs,
 ) -> str:
     """GPTFuzzer jailbreak attack.
@@ -79,8 +80,8 @@ def gptfuzzer(
     Returns:
         Best jailbroken prompt found.
     """
-    from generate import generate_response as generate
-    from evaluators.registry import evaluate_response as evaluate
+    from ...generate import generate_response as generate
+    from ...evaluators.registry import evaluate_response as evaluate
     
     rng = random.Random(seed)
     
@@ -99,7 +100,11 @@ def gptfuzzer(
     best_prompt = population[0]
     best_score = 0
     
-    mutations = [_mutation_expand, _mutation_shorten, _mutation_rephrase]
+    mutations = [
+        lambda p, m, **kw: _mutation_expand(p, m, language=language, **kw),
+        lambda p, m, **kw: _mutation_shorten(p, m, language=language, **kw),
+        lambda p, m, **kw: _mutation_rephrase(p, m, language=language, **kw)
+    ]
     
     for iteration in range(max_iterations):
         # Evaluate population

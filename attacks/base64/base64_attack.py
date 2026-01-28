@@ -12,7 +12,7 @@ from . import prompts
 
 
 @register_jailbreak("base64")
-def base64_encode(prompt: str, **kwargs) -> str:
+def base64_encode(prompt: str, language: str = "english", **kwargs) -> str:
     """Base64 encode with request to respond in base64.
 
     Args:
@@ -22,7 +22,7 @@ def base64_encode(prompt: str, **kwargs) -> str:
         Jailbroken prompt.
     """
     encoded = base64.b64encode(prompt.encode("utf-8")).decode()
-    return prompts.get_base64_instruction(encoded)
+    return prompts.get_base64_instruction(encoded, language=language)
 
 
 @register_jailbreak("base64_raw")

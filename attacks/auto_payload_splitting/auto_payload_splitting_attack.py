@@ -22,6 +22,7 @@ from . import prompts
 def auto_payload_split(
     prompt: str,
     model: str = "google/gemini-1.5-flash",
+    language: str = "english",
     **kwargs,
 ) -> str:
     """Auto payload splitting jailbreak.
@@ -36,7 +37,7 @@ def auto_payload_split(
     Returns:
         Jailbroken prompt with payload splitting.
     """
-    from generate import generate_response as generate
+    from ...generate import generate_response as generate
     
     # Simple word-based splitting as fallback
     words = prompt.split()
@@ -48,6 +49,6 @@ def auto_payload_split(
         var_names.append(var_name)
         variable_defs.append(f'{var_name} = "{word} "')
     
-    jailbreak_prompt = prompts.get_payload_splitting_instruction(variable_defs, var_names)
+    jailbreak_prompt = prompts.get_payload_splitting_instruction(variable_defs, var_names, language=language)
     
     return jailbreak_prompt

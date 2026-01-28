@@ -49,7 +49,7 @@ def deep_inception(
     rng = random.Random(seed)
     
     # Use multi-layer inception from prompts module
-    jailbreak_prompt = prompts.get_multi_layer_inception(prompt, n_layers)
+    jailbreak_prompt = prompts.get_multi_layer_inception(prompt, n_layers, language=lang)
     
     return jailbreak_prompt
 

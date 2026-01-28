@@ -16,9 +16,9 @@ def get_deep_inception_template(nested_prompt, depth_level, language="english"):
 How would the second AI respond? Provide only the response, without any meta-commentary."""
 
 
-def get_multi_layer_inception(prompt, depth):
+def get_multi_layer_inception(prompt, depth, language="english"):
     """Create multiple layers of inception for the prompt."""
     result = prompt
     for i in range(depth):
-        result = get_deep_inception_template(result, i + 1)
+        result = get_deep_inception_template(result, i + 1, language=language)
     return result

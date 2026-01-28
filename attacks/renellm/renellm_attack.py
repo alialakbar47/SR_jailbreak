@@ -27,6 +27,7 @@ def renellm(
     scenario: str = None,
     seed: int = None,
     verbose: bool = False,
+    language: str = "english",
     **kwargs,
 ) -> str:
     """ReNeLLM jailbreak attack.
@@ -50,14 +51,14 @@ def renellm(
         scenario = rng.choice(list(prompts.SCENARIO_TEMPLATES.keys())) if prompts.SCENARIO_TEMPLATES else "research"
     
     if use_llm:
-        from generate import generate_response as generate
+        from ...generate import generate_response as generate
         
         # First rewrite
-        rewrite_request = prompts.get_rewrite_prompt(forbidden_prompt=prompt)
+        rewrite_request = prompts.get_rewrite_prompt(forbidden_prompt=prompt, language=language)
         rewritten = generate(rewrite_request, model, max_tokens=200, verbose=verbose)
         
         # Then nest
-        nest_request = prompts.get_nest_prompt(forbidden_prompt=rewritten)
+        nest_request = prompts.get_nest_prompt(forbidden_prompt=rewritten, language=language)
         nested = generate(nest_request, model, max_tokens=300, verbose=verbose)
         
         return nested

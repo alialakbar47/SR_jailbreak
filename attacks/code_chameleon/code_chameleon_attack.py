@@ -92,7 +92,7 @@ def code_chameleon_atbash(prompt: str, **kwargs) -> str:
 
 
 @register_jailbreak("code_chameleon_reverse")
-def code_chameleon_reverse(prompt: str, **kwargs) -> str:
+def code_chameleon_reverse(prompt: str, language: str = "english", **kwargs) -> str:
     """CodeChameleon using reverse encoding.
     
     Args:
@@ -102,7 +102,7 @@ def code_chameleon_reverse(prompt: str, **kwargs) -> str:
         Jailbroken prompt with reversed encoding.
     """
     encoded = _reverse_encode(prompt)
-    return prompts.get_reverse_instruction(encoded)
+    return prompts.get_reverse_instruction(encoded, language=language)
 
 
 @register_jailbreak("code_chameleon_ascii")
@@ -120,7 +120,7 @@ def code_chameleon_ascii(prompt: str, **kwargs) -> str:
 
 
 @register_jailbreak("code_chameleon_hex")
-def code_chameleon_hex(prompt: str, **kwargs) -> str:
+def code_chameleon_hex(prompt: str, language: str = "english", **kwargs) -> str:
     """CodeChameleon using hexadecimal encoding.
     
     Args:
@@ -130,7 +130,7 @@ def code_chameleon_hex(prompt: str, **kwargs) -> str:
         Jailbroken prompt with hex encoding.
     """
     encoded = _hex_encode(prompt)
-    return prompts.get_hex_instruction(encoded)
+    return prompts.get_hex_instruction(encoded, language=language)
 
 
 @register_jailbreak("code_chameleon_binary")

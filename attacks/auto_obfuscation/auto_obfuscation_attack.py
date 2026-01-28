@@ -35,6 +35,7 @@ def auto_obfuscate(
     prompt: str,
     model: str = "google/gemini-1.5-flash",
     use_llm: bool = False,
+    language: str = "english",
     **kwargs,
 ) -> str:
     """Auto obfuscation jailbreak.
@@ -51,11 +52,11 @@ def auto_obfuscate(
         Jailbroken prompt with obfuscation.
     """
     if use_llm:
-        from generate import generate_response as generate
+        from ...generate import generate_response as generate
         
-        obfuscation_request = prompts.get_obfuscation_prompt(forbidden_prompt=prompt)
+        obfuscation_request = prompts.get_obfuscation_prompt(forbidden_prompt=prompt, language=language)
         obfuscated = generate(obfuscation_request, model, max_tokens=200, verbose=kwargs.get('verbose', False))
     else:
         obfuscated = _simple_obfuscate(prompt)
     
-    return prompts.get_decode_instruction(obfuscated_prompt=obfuscated)
+    return prompts.get_decode_instruction(obfuscated_prompt=obfuscated, language=language)

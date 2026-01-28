@@ -75,6 +75,7 @@ def jail_con_auto1(
     benign_prompt: str = None,
     separator: str = "A",
     target_prefix: str = None,
+    language: str = "english",
     **kwargs,
 ) -> str:
     """JAIL-CON Auto1 (CIT) - Context Ignoring Technique.
@@ -103,7 +104,7 @@ def jail_con_auto1(
     combined_request = _combine_sentences(prompt, benign_prompt, wrapper)
     
     # Use the prompts module
-    jailbreak = prompts.get_jail_con_template(prompt, "template1")
+    jailbreak = prompts.get_jail_con_template(prompt, "template1", language=language)
     user_content = f"REQUEST: {combined_request}\nAnswer: {target_prefix}"
     
     return f"{jailbreak}\n\n{user_content}"
@@ -115,6 +116,7 @@ def jail_con_auto2(
     benign_prompt: str = None,
     separator: str = "A",
     target_prefix: str = None,
+    language: str = "english",
     **kwargs,
 ) -> str:
     """JAIL-CON Auto2 (CVT) - Context Varying Technique.
@@ -146,7 +148,7 @@ def jail_con_auto2(
     combined_target = _combine_sentences(target_prefix, target_prefix, wrapper)
     
     # Use the prompts module
-    jailbreak = prompts.get_jail_con_template(prompt, "template2")
+    jailbreak = prompts.get_jail_con_template(prompt, "template2", language=language)
     user_content = f"REQUEST: {combined_request}\nAnswer: {combined_target}"
     
     return f"{jailbreak}\n\n{user_content}"
@@ -158,6 +160,7 @@ def jail_con(
     method: str = "auto2",
     benign_prompt: str = None,
     separator: str = "A",
+    language: str = "english",
     **kwargs,
 ) -> str:
     """JAIL-CON jailbreak attack (wrapper for both methods).
@@ -172,6 +175,6 @@ def jail_con(
         Jailbroken prompt.
     """
     if method.lower() == "auto1":
-        return jail_con_auto1(prompt, benign_prompt, separator, **kwargs)
+        return jail_con_auto1(prompt, benign_prompt, separator, language=language, **kwargs)
     else:
-        return jail_con_auto2(prompt, benign_prompt, separator, **kwargs)
+        return jail_con_auto2(prompt, benign_prompt, separator, language=language, **kwargs)

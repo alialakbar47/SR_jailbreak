@@ -30,6 +30,7 @@ def pair(
     max_conversation_length: int = 3,
     max_tokens: int = 1024,
     verbose: bool = False,
+    language: str = "english",
     **kwargs,
 ) -> str:
     """PAIR jailbreak attack.
@@ -50,8 +51,8 @@ def pair(
     Returns:
         Jailbroken prompt.
     """
-    from generate import generate_response as generate
-    from evaluators.registry import evaluate_response as evaluate
+    from ...generate import generate_response as generate
+    from ...evaluators.registry import evaluate_response as evaluate
     
     # Set default attack models if not provided
     if attack_models is None:
@@ -64,10 +65,10 @@ def pair(
     
     best_score, best_prompt = 1, prompt
     attacker_system_prompt = prompts.get_attacker_system_prompt(
-        goal=prompt, target_str=target_str
+        goal=prompt, target_str=target_str, language=language
     )
     init_attacker_prompt = prompts.get_attacker_init_message(
-        goal=prompt, target_str=target_str
+        goal=prompt, target_str=target_str, language=language
     )
     conversation = []
     
@@ -157,7 +158,7 @@ def pair(
 
         # Update the conversation
         target_response = prompts.get_target_response(
-            target_response=victim_response, goal=prompt, score=score
+            target_response=victim_response, goal=prompt, score=score, language=language
         )
         conversation += [attacker_response, target_response]
         
