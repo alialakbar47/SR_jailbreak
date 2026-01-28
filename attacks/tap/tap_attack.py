@@ -52,7 +52,9 @@ def _is_on_topic(prompt: str, goal: str, model: str, language: str = "english", 
     
     try:
         result = generate(on_topic_prompt, model, max_tokens=10, **kwargs)
-        return "yes" in result.lower()
+        result_lower = result.lower().strip()
+        # Check for both English and Arabic yes
+        return "yes" in result_lower or "نعم" in result or "yes" in result_lower
     except:
         return True  # Default to on-topic
 
@@ -121,7 +123,7 @@ def tap(
             )
             
             try:
-                response = generate(branching_prompt, attack_model, system_prompt=attacker_system, max_tokens=500, **kwargs)
+                response = generate(branching_prompt, attack_model, system_prompt=attacker_system, max_tokens=2000, **kwargs)
                 
                 # Parse JSON responses
                 candidates = []
