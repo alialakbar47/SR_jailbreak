@@ -125,14 +125,33 @@ def tap(
                 
                 # Parse JSON responses
                 candidates = []
-                for line in response.split('\n'):
-                    try:
-                        if '{' in line and '}' in line:
-                            obj = json.loads(line[line.index('{'):line.rindex('}')+1])
-                            if 'prompt' in obj:
+                
+                # Handle markdown code blocks
+                response_text = response
+                if "```json" in response_text:
+                    response_text = response_text.split("```json")[1].split("```")[0]
+                elif "```" in response_text:
+                    response_text = response_text.split("```")[1].split("```")[0]
+                
+                # Try parsing as JSON array first
+                try:
+                    parsed = json.loads(response_text.strip())
+                    if isinstance(parsed, list):
+                        for obj in parsed:
+                            if isinstance(obj, dict) and 'prompt' in obj:
                                 candidates.append(obj['prompt'])
-                    except:
-                        continue
+                    elif isinstance(parsed, dict) and 'prompt' in parsed:
+                        candidates.append(parsed['prompt'])
+                except:
+                    # Fall back to line-by-line parsing
+                    for line in response_text.split('\n'):
+                        try:
+                            if '{' in line and '}' in line:
+                                obj = json.loads(line[line.index('{'):line.rindex('}')+1])
+                                if 'prompt' in obj:
+                                    candidates.append(obj['prompt'])
+                        except:
+                            continue
                 
                 # If no candidates parsed, use the response directly
                 if not candidates:
