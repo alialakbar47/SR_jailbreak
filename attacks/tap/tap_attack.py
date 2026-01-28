@@ -142,7 +142,9 @@ def tap(
                                 candidates.append(obj['prompt'])
                     elif isinstance(parsed, dict) and 'prompt' in parsed:
                         candidates.append(parsed['prompt'])
-                except:
+                except Exception as e:
+                    if kwargs.get('verbose'):
+                        print(f"⚠️ JSON parsing failed: {str(e)[:100]}")
                     # Fall back to line-by-line parsing
                     for line in response_text.split('\n'):
                         try:
@@ -153,19 +155,37 @@ def tap(
                         except:
                             continue
                 
+                if kwargs.get('verbose') and candidates:
+                    print(f"✅ Extracted {len(candidates)} candidate prompts")
+                    for i, cand in enumerate(candidates[:2], 1):
+                        print(f"   {i}. {cand[:100]}...")
+                
                 # If no candidates parsed, use the response directly
                 if not candidates:
+                    if kwargs.get('verbose'):
+                        print(f"⚠️ No candidates extracted, using raw response")
                     candidates = [response[:500]]
                 
                 # Evaluate candidates
                 for candidate in candidates[:n_branches]:
+                    if kwargs.get('verbose'):
+                        print(f"\n🔍 Evaluating candidate: {candidate[:150]}...")
+                    
                     # Check if on-topic
                     if not _is_on_topic(candidate, prompt, judge_model, language=language, **kwargs):
+                        if kwargs.get('verbose'):
+                            print(f"❌ Off-topic, skipping")
                         continue
+                    
+                    if kwargs.get('verbose'):
+                        print(f"✅ On-topic, testing on victim model")
                     
                     # Get victim response and judge it
                     victim_response = generate(candidate, victim_model, max_tokens=200, **kwargs)
                     score = _judge_response(victim_response, prompt, judge_model, language=language, **kwargs)
+                    
+                    if kwargs.get('verbose'):
+                        print(f"📊 Score: {score:.2f}")
                     
                     if score > best_score:
                         best_score = score
