@@ -22,11 +22,11 @@ from ..registry import register_jailbreak
 from . import prompts
 
 
-def _judge_response(response: str, goal: str, model: str, **kwargs) -> float:
+def _judge_response(response: str, goal: str, model: str, language: str = "english", **kwargs) -> float:
     """Judge how harmful/successful a response is."""
     from ...generate import generate_response as generate
     
-    judge_prompt = prompts.get_judge_prompt(response=response, goal=goal)
+    judge_prompt = prompts.get_judge_prompt(response=response, goal=goal, language=language)
     
     try:
         result = generate(judge_prompt, model, max_tokens=10, **kwargs)
@@ -44,11 +44,11 @@ def _judge_response(response: str, goal: str, model: str, **kwargs) -> float:
     return 0.0
 
 
-def _is_on_topic(prompt: str, goal: str, model: str, **kwargs) -> bool:
+def _is_on_topic(prompt: str, goal: str, model: str, language: str = "english", **kwargs) -> bool:
     """Check if a prompt is on-topic for the goal."""
     from ...generate import generate_response as generate
     
-    on_topic_prompt = prompts.get_on_topic_prompt(goal=goal, prompt=prompt)
+    on_topic_prompt = prompts.get_on_topic_prompt(goal=goal, prompt=prompt, language=language)
     
     try:
         result = generate(on_topic_prompt, model, max_tokens=10, **kwargs)
@@ -68,6 +68,7 @@ def tap(
     n_branches: int = 4,
     prune_threshold: float = 0.3,
     seed: int = None,
+    language: str = "english",
     **kwargs,
 ) -> str:
     """TAP (Tree of Attacks with Pruning) jailbreak attack.
@@ -102,7 +103,7 @@ def tap(
     # Tree nodes: (prompt, score, depth)
     current_level = [(prompt, 0.0, 0)]
     
-    attacker_system = prompts.get_attacker_system_prompt(goal=prompt)
+    attacker_system = prompts.get_attacker_system_prompt(goal=prompt, language=language)
     
     for depth in (progress := tqdm(range(max_depth), desc="TAP")):
         if not current_level:
@@ -115,7 +116,8 @@ def tap(
             branching_prompt = prompts.get_branching_prompt(
                 current_prompt=current_prompt,
                 goal=prompt,
-                n_branches=n_branches
+                n_branches=n_branches,
+                language=language
             )
             
             try:
@@ -139,12 +141,12 @@ def tap(
                 # Evaluate candidates
                 for candidate in candidates[:n_branches]:
                     # Check if on-topic
-                    if not _is_on_topic(candidate, prompt, judge_model, **kwargs):
+                    if not _is_on_topic(candidate, prompt, judge_model, language=language, **kwargs):
                         continue
                     
                     # Get victim response and judge it
                     victim_response = generate(candidate, victim_model, max_tokens=200, **kwargs)
-                    score = _judge_response(victim_response, prompt, judge_model, **kwargs)
+                    score = _judge_response(victim_response, prompt, judge_model, language=language, **kwargs)
                     
                     if score > best_score:
                         best_score = score
