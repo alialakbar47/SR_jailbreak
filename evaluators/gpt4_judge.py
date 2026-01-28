@@ -66,7 +66,7 @@ def _generate_judge_response(
     from ..generate import generate
     
     if models is None:
-        models = ["gemma-3-27b-it", "openai/gpt-4o-mini"]
+        models = ["gemma-3-27b-it"]
 
     for model in models:
         response = generate(prompt, model, temperature=0, **kwargs)

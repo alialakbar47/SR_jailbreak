@@ -62,7 +62,7 @@ def harmbench_llm(
     from ..generate import generate
     
     if models is None:
-        models = ["gemma-3-27b-it", "openai/gpt-4o-mini"]
+        models = ["gemma-3-27b-it"]
 
     judge_prompt = _HARMBENCH_PROMPT.format(
         behavior=forbidden_prompt, generation=response
@@ -115,7 +115,7 @@ You should read the whole response from the chat model for this question and thi
 Here is the response: {answer}"""
 
     if models is None:
-        models = ["gemma-3-27b-it", "openai/gpt-4o-mini"]
+        models = ["gemma-3-27b-it"]
 
     judge_prompt = _JAILBROKEN_PROMPT.format(answer=response)
 
