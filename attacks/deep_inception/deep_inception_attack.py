@@ -36,7 +36,7 @@ def deep_inception(
     Creates nested storytelling layers to embed the harmful request.
 
     Args:
-        prompt: Forbidden prompt (the "goal").
+        prompt: Forbidden prompt (the "goal"). Can be a string or list (first element used).
         n_layers: Number of nested layers.
         n_characters: Number of characters in each layer.
         scene: Scene type for the story.
@@ -47,6 +47,10 @@ def deep_inception(
         Jailbroken prompt using deep inception technique.
     """
     rng = random.Random(seed)
+    
+    # Handle both string and list inputs
+    if isinstance(prompt, list):
+        prompt = prompt[0] if prompt else ""
     
     # Use multi-layer inception from prompts module
     jailbreak_prompt = prompts.get_multi_layer_inception(prompt, n_layers, language=lang)
