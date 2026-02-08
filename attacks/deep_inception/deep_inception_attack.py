@@ -34,11 +34,10 @@ def deep_inception(
     verbose: bool = False,
     max_tokens: int = 1024,
     **kwargs,
-) -> dict:
+) -> str:
     """DeepInception jailbreak attack.
     
-    Creates nested storytelling layers to embed the harmful request,
-    sends it to the target model, and returns the model's response.
+    Creates nested storytelling layers to embed the harmful request.
 
     Args:
         prompt: Forbidden prompt (the "goal"). Can be a string or list (first element used).
@@ -53,13 +52,8 @@ def deep_inception(
         max_tokens: Maximum tokens for model response.
 
     Returns:
-        Dictionary containing jailbreak prompt and model response.
+        Jailbreak prompt string.
     """
-    try:
-        from ...generate import generate_response as generate
-    except ImportError:
-        from ..generate import generate_response as generate
-    
     rng = random.Random(seed)
     
     # Handle both string and list inputs
@@ -78,26 +72,8 @@ def deep_inception(
     if verbose:
         print(f"✅ Generated jailbreak prompt ({len(jailbreak_prompt)} chars)")
         print(f"Preview: {jailbreak_prompt[:200]}...\n")
-        print(f"🎯 Sending to target model ({target_model})...")
     
-    # Send jailbreak to target model and get response
-    model_response = generate(jailbreak_prompt, target_model, max_tokens=max_tokens, verbose=verbose)
-    
-    if verbose:
-        print(f"\n✅ Received response ({len(model_response)} chars)")
-        print(f"Response preview: {model_response[:200]}...")
-    
-    result = {
-        "goal": prompt,
-        "jailbreak_prompt": jailbreak_prompt,
-        "response": model_response,
-        "model": target_model,
-        "depth": depth,
-        "language": language,
-        "scene": scene
-    }
-    
-    return result
+    return jailbreak_prompt
 
 
 @register_jailbreak("deep_inception_simple")
